@@ -1,0 +1,2 @@
+gspread==5.1.1
+python-telegram-bot==13.10
