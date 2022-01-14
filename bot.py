@@ -7,8 +7,11 @@ import sheet
 
 
 def to_item(update):
-    pos = update.message.text.index(" ")
-    return update.message.text[pos + 1 :]
+    try:
+        pos = update.message.text.index(" ")
+    except ValueError:
+        return None
+    return update.message.text[pos + 1 :].strip()
 
 
 def authorized(update):
@@ -20,6 +23,9 @@ def add(update, _):
         return
 
     item = to_item(update)
+    if not item:
+        return
+
     spreadsheet = sheet.spreadsheet()
     sheet.add(spreadsheet, item)
     reply = sheet.view(spreadsheet)
@@ -31,6 +37,9 @@ def remove(update, _):
         return
 
     item = to_item(update)
+    if not item:
+        return
+
     spreadsheet = sheet.spreadsheet()
     sheet.remove(spreadsheet, item)
     reply = sheet.view(spreadsheet)
