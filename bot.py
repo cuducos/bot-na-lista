@@ -2,10 +2,8 @@ import os
 
 from telegram.ext import Updater, CommandHandler
 
+import settings
 import sheet
-
-
-ALLOWED_USERS = {"cuducos", "Flavia_sv", "gabrilas"}
 
 
 def to_item(update):
@@ -14,12 +12,7 @@ def to_item(update):
 
 
 def authorized(update):
-    try:
-        return update.message.chat.username in ALLOWED_USERS
-    except:
-        import ipdb
-
-        ipdb.set_trace()
+    return update.message.chat.username in settings.ALLOWED_USERS
 
 
 def add(update, _):
@@ -53,7 +46,7 @@ def view(update, _):
     update.message.reply_text(reply)
 
 
-updater = Updater(os.environ["FLADUCOS_BOT_TOKEN"])
+updater = Updater(settings.BOT_TOKEN)
 updater.dispatcher.add_handler(CommandHandler("add", add))
 updater.dispatcher.add_handler(CommandHandler("remove", remove))
 updater.dispatcher.add_handler(CommandHandler("view", view))

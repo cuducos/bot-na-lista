@@ -1,24 +1,21 @@
-import os
 import json
 from base64 import b64decode
 
 from gspread import service_account_from_dict
 
-
-SPREADSHEET_ID = "1UCoGKlHgA3ZaHfnHzhSEibGOoYExVCVKkdDsdnyjbts"
-WORKSHEET_NAME = "Lista de Compras"
+import settings
 
 
 def credentials():
-    encoded = os.environ["FLADUCOS_GOOGLE_TOKEN"]
+    encoded = settings.GOOGLE_TOKEN
     decoded = b64decode(encoded)
     return json.loads(decoded)
 
 
 def spreadsheet():
     sheets = service_account_from_dict(credentials())
-    spreadsheet = sheets.open_by_key(SPREADSHEET_ID)
-    return spreadsheet.worksheet(WORKSHEET_NAME)
+    spreadsheet = sheets.open_by_key(settings.SPREADSHEET_ID)
+    return spreadsheet.worksheet(settings.WORKSHEET_NAME)
 
 
 def add(sheet, item):
