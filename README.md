@@ -2,6 +2,14 @@
 
 Lista de compras de [Cuducos](https://github.com/cuducos) e [Flávia](https://github.com/Flaviasv).
 
+## Comandos do bot
+
+| Comando | Descrição |
+|---|---|
+| `/add <item>` | Adiciona `<item>` à lista de compras |
+| `/remove <item>` | Remove `<item>` da lista de compras |
+| `/view` | Mostra a lista de compras |
+
 ## Variáveis de ambiente
 
 | Variável | Descrição |
