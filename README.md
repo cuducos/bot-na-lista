@@ -1,29 +1,45 @@
 # Lista de Compras
 
-Lista de compras de [Cuducos](https://github.com/cuducos) e [Flávia](https://github.com/Flaviasv).
+Telegram bot to manage a shopping list, collectively! _Lista de Compras_ is the Portuguese expression for _shopping list_.
 
-## Comandos do bot
+## Bots commands
 
-| Comando | Descrição |
-|---|---|
-| `/add <item>` | Adiciona `<item>` à lista de compras |
-| `/remove <item>` | Remove `<item>` da lista de compras |
-| `/view` | Mostra a lista de compras |
+### `/view`
 
-## Variáveis de ambiente
+Shows the shopping list.
 
-| Variável | Descrição |
-|---|---|
-| `FLADUCOS_ALLOWED_USERS` | Usuários autorizados a utilizar o bot, separados por vírgula |
-| `FLADUCOS_BOT_TOKEN` | Token de acesso de um bot do Telegram |
-| `FLADUCOS_GOOGLE_TOKEN` | Chaves JSON de acesso a uma [conta de serviço do Google para o `gspread`](https://docs.gspread.org/en/v5.1.1/oauth2.html#authentication) |
-| `FLADUCOS_SPREADSHEET_ID` | `sheet.py` | ID de uma planilha no Google Sheets |
-| `FLADUCOS_WORKSHEET_NAME` | `sheet.py` | Nome de uma aba da planilha |
+### `/who`
 
-## Instruções
+Shows the people with access to the shopping list.
 
-```console
-$ python -m venv .venv
-$ python .venv/bin/pip install -r requirements.txt
-$ python .venv/bin/python bot.py
-```
+### `/add <value>`
+
+#### If `<value>` starts with `@`
+
+E.g.: `/add @cuducos`.
+
+Gives that Telegram user access to the shopping list. Each shopping list can have **up to 16 people**, and each person can be **only at one shopping list** at a time.
+
+**Important** to highlight that everyone is allowed to add more people.
+
+#### If `<value>` does not start with `@`
+
+E.g.: `/add Banana`.
+
+Adds `<value>` to the shopping list.
+
+### `/remove <value>`
+
+#### If `<value>` starts with `@`
+
+E.g.: `/remove @cuducos`.
+
+Removes access to the shopping list from that Telegram user.
+
+**Important** to highlight that:
+* everyone is allowed to remove others and to remove themselves;
+* and when the last one removes themselves from the shopping list, i.e. the list has no people left, the **list is automatically deleted**.
+
+#### If `<value>` does not start with `@`
+
+Removes `<value>` from the shopping list.
