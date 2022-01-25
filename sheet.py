@@ -19,13 +19,14 @@ def spreadsheet():
 
 
 def add(sheet, item):
-    if sheet.find(item):
+    cleaned = item.strip()
+    if sheet.find(cleaned):
         return None
-    return sheet.append_row([item])
+    return sheet.append_row([cleaned])
 
 
 def remove(sheet, item):
-    for cell in sheet.findall(item):
+    for cell in sheet.findall(item.strip()):
         sheet.delete_rows(cell.row, cell.row)
 
 
