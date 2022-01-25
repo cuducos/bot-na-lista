@@ -22,14 +22,18 @@ def add(sheet, item):
     cleaned = item.strip()
     if sheet.find(cleaned):
         return None
+
+    remove(sheet, "")  # clean-up empty line (if exists)
     return sheet.append_row([cleaned])
 
 
 def remove(sheet, item):
     for cell in sheet.findall(item.strip()):
+        sheet.update_cell(cell.row, cell.col, "")
         sheet.delete_rows(cell.row, cell.row)
 
 
 def view(sheet):
     items = sheet.col_values(1)
-    return "\n".join(items)
+    cleaned = (item.strip() for item in items)
+    return "\n".join(item for item in cleaned if item)
