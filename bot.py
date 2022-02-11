@@ -1,9 +1,12 @@
-import os
+from sys import argv, exit
 
 from telegram.ext import Updater, CommandHandler
 
 import settings
 import sheet
+
+
+MODES = {"poll", "web"}
 
 
 def to_item(update):
@@ -55,9 +58,38 @@ def view(update, _):
     update.message.reply_text(reply)
 
 
-updater = Updater(settings.BOT_TOKEN)
-updater.dispatcher.add_handler(CommandHandler("add", add))
-updater.dispatcher.add_handler(CommandHandler("remove", remove))
-updater.dispatcher.add_handler(CommandHandler("view", view))
-updater.start_polling()
-updater.idle()
+def get_mode():
+    def available():
+        modes = ", ".join(sorted(MODES))
+        print(f"Available modes are: {modes}.")
+
+    try:
+        mode = argv[1].lower()
+    except IndexError:
+        print(f"Missing `mode` argument. Try python {__file__} <MODE>")
+        available()
+        exit(1)
+
+    if mode not in MODES:
+        print(f"Unknown mode {mode}.")
+        available()
+        exit(1)
+
+    return mode
+
+
+def main():
+    mode = get_mode()
+    updater = Updater(settings.BOT_TOKEN)
+    updater.dispatcher.add_handler(CommandHandler("add", add))
+    updater.dispatcher.add_handler(CommandHandler("remove", remove))
+    updater.dispatcher.add_handler(CommandHandler("view", view))
+    if mode == "poll":
+        updater.start_polling()
+    if mode == "web":
+        updater.start_webhook(**settings.WEBHOOK)
+    updater.idle()
+
+
+if __name__ == "__main__":
+    main()
