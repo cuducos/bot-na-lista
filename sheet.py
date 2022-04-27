@@ -28,6 +28,11 @@ def add(sheet, item):
 
 
 def remove(sheet, item):
+    if isinstance(item, int):
+        sheet.update_cell(item, 1, "")
+        sheet.delete_rows(item, item)
+        return
+
     for cell in sheet.findall(item.strip()):
         sheet.update_cell(cell.row, cell.col, "")
         sheet.delete_rows(cell.row, cell.row)
@@ -35,5 +40,5 @@ def remove(sheet, item):
 
 def view(sheet):
     items = sheet.col_values(1)
-    cleaned = (item.strip() for item in items)
+    cleaned = (f"{count}. {item.strip()}" for count, item in enumerate(items, 1))
     return "\n".join(item for item in cleaned if item)

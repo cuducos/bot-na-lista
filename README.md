@@ -7,7 +7,7 @@ Lista de compras de [Cuducos](https://github.com/cuducos) e [Flávia](https://gi
 | Comando | Descrição |
 |---|---|
 | `/add <item>` | Adiciona `<item>` à lista de compras |
-| `/remove <item>` | Remove `<item>` da lista de compras |
+| `/remove <item>` | Remove `<item>` da lista de compras, sendo que este pode ser o número ou o nome do item |
 | `/view` | Mostra a lista de compras |
 
 ## Variáveis de ambiente

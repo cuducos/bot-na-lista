@@ -14,7 +14,16 @@ def to_item(update):
         pos = update.message.text.index(" ")
     except ValueError:
         return None
-    return update.message.text[pos + 1 :].strip()
+    value = update.message.text[pos + 1 :].strip()
+
+    parts = value.split(".")
+    if parts:
+        try:
+            return int(parts[0])
+        except ValueError:
+            pass
+
+    return value
 
 
 def authorized(update):
