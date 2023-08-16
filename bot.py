@@ -1,6 +1,13 @@
+"""Me envie uma mensagem.
+
+* Se a mensagem for um número, eu vou excluir o ítem da lista que tem esse número.
+* Se a mensagem não for um número, eu vou adicionar o ítem na lista.
+
+Use /view para ver a lista."""
+
 from sys import argv, exit
 
-from telegram.ext import Updater, CommandHandler
+from telegram.ext import ApplicationBuilder, CommandHandler, MessageHandler, filters
 
 import settings
 import sheet
@@ -9,62 +16,42 @@ import sheet
 MODES = {"poll", "web"}
 
 
-def to_item(update):
+def authorized(func):
+    def wrapper(update, *args, **kwargs):
+        if update.message.chat.username not in settings.ALLOWED_USERS:
+            return
+
+        return func(update)
+
+    return wrapper
+
+
+@authorized
+async def help(update):
+    await update.message.reply_text(__doc__)
+
+
+@authorized
+async def add_or_remove_item(update):
+    item = update.message.text.strip()
+    spreadsheet = sheet.spreadsheet()
+
     try:
-        pos = update.message.text.index(" ")
+        item = int(item)
+        action = sheet.remove
     except ValueError:
-        return None
-    value = update.message.text[pos + 1 :].strip()
+        action = sheet.add
 
-    parts = value.split(".")
-    if parts:
-        try:
-            return int(parts[0])
-        except ValueError:
-            pass
-
-    return value
-
-
-def authorized(update):
-    return update.message.chat.username in settings.ALLOWED_USERS
-
-
-def add(update, _):
-    if not authorized(update):
-        return
-
-    item = to_item(update)
-    if not item:
-        return
-
-    spreadsheet = sheet.spreadsheet()
-    sheet.add(spreadsheet, item)
+    action(spreadsheet, item)
     reply = sheet.view(spreadsheet)
-    update.message.reply_text(reply)
+    await update.message.reply_text(reply)
 
 
-def remove(update, _):
-    if not authorized(update):
-        return
-
-    item = to_item(update)
-    if not item:
-        return
-
-    spreadsheet = sheet.spreadsheet()
-    sheet.remove(spreadsheet, item)
-    reply = sheet.view(spreadsheet)
-    update.message.reply_text(reply)
-
-
-def view(update, _):
-    if not authorized(update):
-        return
-
+@authorized
+async def view(update):
     spreadsheet = sheet.spreadsheet()
     reply = sheet.view(spreadsheet)
-    update.message.reply_text(reply)
+    await update.message.reply_text(reply)
 
 
 def get_mode():
@@ -89,15 +76,16 @@ def get_mode():
 
 def main():
     mode = get_mode()
-    updater = Updater(settings.BOT_TOKEN)
-    updater.dispatcher.add_handler(CommandHandler("add", add))
-    updater.dispatcher.add_handler(CommandHandler("remove", remove))
-    updater.dispatcher.add_handler(CommandHandler("view", view))
+    app = ApplicationBuilder().token(settings.BOT_TOKEN).build()
+    app.add_handler(CommandHandler("view", view))
+    app.add_handler(CommandHandler("help", help))
+    app.add_handler(MessageHandler(filters.ALL, add_or_remove_item))
+
     if mode == "poll":
-        updater.start_polling()
+        app.run_polling()
     if mode == "web":
-        updater.start_webhook(**settings.WEBHOOK)
-    updater.idle()
+        app.run_webhook(**settings.WEBHOOK)
+    app.idle()
 
 
 if __name__ == "__main__":

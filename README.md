@@ -24,8 +24,10 @@ Lista de compras de [Cuducos](https://github.com/cuducos) e [Flávia](https://gi
 
 ## Instruções
 
+O bot pode ser inicializado no modo `poll` ou `web`, por exemplo:
+
 ```console
 $ python -m venv .venv
 $ python .venv/bin/pip install -r requirements.txt
-$ python .venv/bin/python bot.py
+$ python .venv/bin/python bot.py poll
 ```
