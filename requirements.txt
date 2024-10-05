@@ -1,2 +1,0 @@
-gspread==5.10.0
-python-telegram-bot[webhooks]==20.4

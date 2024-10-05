@@ -1,8 +1,8 @@
-# Lista de Compras
+# Bot na Lista
 
-Lista de compras de [Cuducos](https://github.com/cuducos) e [Flávia](https://github.com/Flaviasv).
+Bot na Lista bot (Portuguese word play for _add to the list_) made with 💜 by [Cuducos](https://github.com/cuducos) and [Flávia](https://github.com/Flaviasv).
 
-## Comandos do bot
+Send a message or add [`@bot_na_lista_bot`](https://t.me/bot_na_lista_bot) to a group to get started.
 
 | Comando | Descrição |
 |---|---|
@@ -10,24 +10,31 @@ Lista de compras de [Cuducos](https://github.com/cuducos) e [Flávia](https://gi
 | `<number>` | Remove ítem número `<number>` da lista de compras |
 | `/view` | Mostra a lista de compras |
 
-## Variáveis de ambiente
+## Environment Variables
 
-| Variável | Descrição |
+| Variable | Description |
 |---|---|
-| `FLADUCOS_ALLOWED_USERS` | Usuários autorizados a utilizar o bot, separados por vírgula |
-| `FLADUCOS_BOT_TOKEN` | Token de acesso de um bot do Telegram |
-| `FLADUCOS_GOOGLE_TOKEN` | Chaves JSON de acesso a uma [conta de serviço do Google para o `gspread`](https://docs.gspread.org/en/v5.1.1/oauth2.html#authentication) |
-| `FLADUCOS_SPREADSHEET_ID` | ID de uma planilha no Google Sheets |
-| `FLADUCOS_WORKSHEET_NAME` | Nome de uma aba da planilha |
-| `PORT` | Porta do _webhook_ do bot (opcional) |
-| `WEBHOOK_URL` | URL do _webhook_ dp bot (opcional) |
+| `DATABASE_URL` | Credentials for a PostgreSQL database |
+| `TELOXIDE_TOKEN` | Telegram bot token | 
+| `PORT` | Bot webhook port (optional) |
+| `HOST` | Bot webhook host (optional) |
 
-## Instruções
+If the environment variables `PORT` and `HOST` are set, the bot starts as a webhook. Otherwise, it starts as a polling bot.
 
-O bot pode ser inicializado no modo `poll` ou `web`, por exemplo:
+### Database
+
+If you need a quick database **for development**, `./contrib/db.sh` starts a Docker container with one at `
+postgres://bot:lista@0.0.0.0:5432/bot_na_lista?sslmode=disable`.
+
+If you need one **for tests**, `./contrib/db.sh --test` starts a Docker container with no data persistence at the same URI.
+
+To stop the database use `docker stop bot-na-lista-db`.
+
+## Contributing
 
 ```console
-$ python -m venv .venv
-$ python .venv/bin/pip install -r requirements.txt
-$ python .venv/bin/python bot.py poll
+$ cargo fmt
+$ cargo clippy --fix
+$ cargo test -- --test-threads 1
 ```
+
