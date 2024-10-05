@@ -5,7 +5,7 @@ use diesel::{
 };
 use std::env;
 
-const DEFAULT_MAX_CONNECTIONS: u32 = 8;
+pub const DEFAULT_MAX_CONNECTIONS: u32 = 2;
 
 pub fn from_env() -> Result<Pool<ConnectionManager<PgConnection>>> {
     let url = env::var("DATABASE_URL").context("Missing `DATABASE_URL` environment variable")?;
