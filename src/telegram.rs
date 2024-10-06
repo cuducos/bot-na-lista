@@ -15,7 +15,6 @@ use teloxide::{
     update_listeners::webhooks,
     RequestError,
 };
-use tokio::spawn;
 use url::Url;
 
 const DEFAULT_HOST_IP: [u8; 4] = [0, 0, 0, 0];
@@ -32,31 +31,28 @@ enum Response {
     List(List),
 }
 
-fn send_response(bot: &Bot, chat_id: ChatId, response: Response) {
+async fn send_response(bot: &Bot, chat_id: ChatId, response: Response) {
     let bot = bot.clone();
     let (text, label) = match response {
         Response::Text(txt) => (txt, "Message"),
         Response::List(list) => (format!("{}", list), "List"),
     };
-
-    spawn(async move {
-        match bot.send_message(chat_id, text).send().await {
-            Ok(_) => log::debug!("[List#{}] {} sent successfully", chat_id, label),
-            Err(e) => log::error!(
-                "[List#{}] Error sending {}: {:?}",
-                chat_id,
-                label.to_lowercase(),
-                e
-            ),
-        };
-    });
+    match bot.send_message(chat_id, text).send().await {
+        Ok(_) => log::debug!("[List#{}] {} sent successfully", chat_id, label),
+        Err(e) => log::error!(
+            "[List#{}] Error sending {}: {:?}",
+            chat_id,
+            label.to_lowercase(),
+            e
+        ),
+    };
 }
 
-fn process_message(pool: Pool<ConnectionManager<PgConnection>>, bot: &Bot, msg: &Message) {
+async fn process_message(pool: Pool<ConnectionManager<PgConnection>>, bot: &Bot, msg: &Message) {
     if let MessageKind::Common(_) = &msg.kind {
         if let Some(txt) = msg.text() {
             if txt == "/help" || txt == "/start" {
-                return send_response(bot, msg.chat.id, Response::Text(HELP.to_string()));
+                return send_response(bot, msg.chat.id, Response::Text(HELP.to_string())).await;
             }
             match pool.get() {
                 Ok(conn) => {
@@ -67,7 +63,7 @@ fn process_message(pool: Pool<ConnectionManager<PgConnection>>, bot: &Bot, msg: 
                         chat.process_input(txt)
                     };
                     match reply {
-                        Ok(list) => send_response(bot, msg.chat.id, Response::List(list)),
+                        Ok(list) => send_response(bot, msg.chat.id, Response::List(list)).await,
                         Err(e) => log::error!(
                             "[List#{}] Error processing input `{}`: {}",
                             chat.chat_id,
@@ -110,7 +106,7 @@ pub async fn run(pool: Pool<ConnectionManager<PgConnection>>) -> Result<()> {
     let bot = Bot::from_env();
     let handler = dptree::entry().branch(Update::filter_message().endpoint(
         |bot: Bot, pool: Pool<ConnectionManager<PgConnection>>, msg: Message| async move {
-            process_message(pool.clone(), &bot, &msg);
+            process_message(pool.clone(), &bot, &msg).await;
             respond(())
         },
     ));
