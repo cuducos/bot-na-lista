@@ -3,6 +3,7 @@ use crate::{
     schema::list,
 };
 use anyhow::{Context, Result};
+use chrono::Utc;
 use diesel::{
     r2d2::{ConnectionManager, PooledConnection},
     update, ExpressionMethods, OptionalExtension, PgConnection, QueryDsl, RunQueryDsl,
@@ -35,6 +36,7 @@ impl Chat {
         ))?;
         if !list.items.contains(&new_item) {
             list.items.push(new_item);
+            list.updated_at = Utc::now();
             update(list::table)
                 .filter(list::dsl::chat_id.eq(self.chat_id))
                 .set(&list)
@@ -51,6 +53,7 @@ impl Chat {
         ))?;
         if item < list.items.len() {
             list.items.remove(item);
+            list.updated_at = Utc::now();
             update(list::table)
                 .filter(list::dsl::chat_id.eq(self.chat_id))
                 .set(&list)
