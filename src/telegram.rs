@@ -90,7 +90,7 @@ async fn webhook(
 ) -> Result<()> {
     let url = Url::parse(format!("https://{host}/webhook").as_str())?;
     let opts = webhooks::Options::new((DEFAULT_HOST_IP, port).into(), url.clone())
-        .max_connections(db::DEFAULT_MAX_CONNECTIONS as u8);
+        .max_connections(db::max_connections() as u8);
     dispatcher
         .dispatch_with_listener(
             webhooks::axum(bot, opts).await?,
