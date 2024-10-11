@@ -4,18 +4,22 @@ Bot na Lista bot (Portuguese word play for _add to the list_) made with 💜 by 
 
 Send a message or add [`@bot_na_lista_bot`](https://t.me/bot_na_lista_bot) to a group to get started.
 
-| Comando | Descrição |
+| Command | Description |
 |---|---|
-| `<string>` | Adiciona `<string>` à lista de compras |
-| `<number>` | Remove ítem número `<number>` da lista de compras |
-| `/view` | Mostra a lista de compras |
+| `text` | Adds `text` to the list |
+| `number` | Removes item `number` from the list |
+| `/view` | Shows the list |
+
+> [!WARNING]
+> Lists with no activity for more than one year will be deleted.
+
 
 ## Environment Variables
 
 | Variable | Description |
 |---|---|
 | `DATABASE_URL` | Credentials for a PostgreSQL database |
-| `TELOXIDE_TOKEN` | Telegram bot token | 
+| `TELOXIDE_TOKEN` | Telegram bot token |
 | `PORT` | Bot webhook port (optional) |
 | `HOST` | Bot webhook host (optional) |
 

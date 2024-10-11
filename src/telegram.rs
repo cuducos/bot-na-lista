@@ -24,7 +24,9 @@ If the message is a number, I will delete the item from the list that has that n
 
 If the message is not a number, I will add the item to the list.
 
-Use /view to see the list.";
+Use /view to see the list.
+
+Lists with no activity for more than one year are automatically deleted.";
 
 enum Response {
     Text(String),
@@ -54,9 +56,8 @@ async fn process_message(pool: Pool<ConnectionManager<PgConnection>>, bot: &Bot,
             if txt == "/help" || txt == "/start" {
                 return send_response(bot, msg.chat.id, Response::Text(HELP.to_string())).await;
             }
-            match pool.get() {
-                Ok(conn) => {
-                    let mut chat = Chat::new(msg.chat.id.0, conn);
+            match Chat::new(msg.chat.id.0, &pool) {
+                Ok(mut chat) => {
                     let reply = if txt == "/view" {
                         chat.list()
                     } else {
@@ -72,11 +73,7 @@ async fn process_message(pool: Pool<ConnectionManager<PgConnection>>, bot: &Bot,
                         ),
                     }
                 }
-                Err(e) => log::error!(
-                    "[List#{}] Error getting database connection: {}",
-                    msg.chat.id.0,
-                    e
-                ),
+                Err(e) => log::error!("[List#{}] Error handling chat: {}", msg.chat.id.0, e),
             }
         }
     }

@@ -5,7 +5,7 @@ use crate::{
 use anyhow::{Context, Result};
 use chrono::Utc;
 use diesel::{
-    r2d2::{ConnectionManager, PooledConnection},
+    r2d2::{ConnectionManager, Pool, PooledConnection},
     update, ExpressionMethods, OptionalExtension, PgConnection, QueryDsl, RunQueryDsl,
 };
 
@@ -15,8 +15,12 @@ pub struct Chat {
 }
 
 impl Chat {
-    pub fn new(chat_id: i64, conn: PooledConnection<ConnectionManager<PgConnection>>) -> Self {
-        Self { chat_id, conn }
+    pub fn new(chat_id: i64, pool: &Pool<ConnectionManager<PgConnection>>) -> Result<Self> {
+        let conn = pool.get().context(format!(
+            "[List#{}] Could not get database connection",
+            chat_id
+        ))?;
+        Ok(Self { chat_id, conn })
     }
 
     fn create_list(&mut self) -> Result<List> {
@@ -36,6 +40,7 @@ impl Chat {
         ))?;
         if !list.items.contains(&new_item) {
             list.items.push(new_item);
+            list.is_empty = false;
             list.updated_at = Utc::now();
             update(list::table)
                 .filter(list::dsl::chat_id.eq(self.chat_id))
@@ -46,13 +51,14 @@ impl Chat {
         Ok(list)
     }
 
-    fn remove_item(&mut self, item: usize) -> Result<List> {
+    fn remove_item(&mut self, index: usize) -> Result<List> {
         let mut list = self.list().context(format!(
             "[List#{}] Error looking for list to remove item",
             self.chat_id
         ))?;
-        if item < list.items.len() {
-            list.items.remove(item);
+        if index < list.items.len() {
+            list.items.remove(index);
+            list.is_empty = list.items.is_empty();
             list.updated_at = Utc::now();
             update(list::table)
                 .filter(list::dsl::chat_id.eq(self.chat_id))
@@ -81,8 +87,8 @@ impl Chat {
     }
 
     pub fn process_input(&mut self, item: &str) -> Result<List> {
-        if let Ok(index) = item.parse::<usize>() {
-            self.remove_item(index - 1)
+        if let Ok(number) = item.parse::<usize>() {
+            self.remove_item(number - 1)
         } else {
             self.add_item(item)
         }

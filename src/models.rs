@@ -9,6 +9,7 @@ pub struct List {
     pub items: Vec<Option<String>>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+    pub is_empty: bool,
 }
 
 impl std::fmt::Display for List {
@@ -26,6 +27,18 @@ impl std::fmt::Display for List {
     }
 }
 
+impl std::fmt::Debug for List {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("List")
+            .field("chat_id", &self.chat_id)
+            .field("is_empty", &self.is_empty)
+            .field("items", &self.items)
+            .field("created_at", &self.created_at)
+            .field("updated_at", &self.updated_at)
+            .finish()
+    }
+}
+
 #[derive(Insertable, AsChangeset)]
 #[diesel(table_name = crate::schema::list)]
 pub struct NewList {
@@ -40,6 +53,7 @@ mod tests {
     fn test_list_display() {
         let list = List {
             chat_id: 42,
+            is_empty: false,
             items: vec![Some("Foo".to_string()), Some("Bar".to_string()), None],
             created_at: Utc::now(),
             updated_at: Utc::now(),
@@ -53,6 +67,7 @@ mod tests {
     fn test_empty_list_display() {
         let list = List {
             chat_id: 1,
+            is_empty: true,
             items: vec![],
             created_at: Utc::now(),
             updated_at: Utc::now(),

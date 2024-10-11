@@ -6,5 +6,6 @@ diesel::table! {
         items -> Array<Nullable<Text>>,
         created_at -> Timestamptz,
         updated_at -> Timestamptz,
+        is_empty -> Bool,
     }
 }

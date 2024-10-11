@@ -7,7 +7,7 @@ pub fn run<T>(test: T)
 where
     T: FnOnce() + UnwindSafe,
 {
-    let pool = db::from_env().expect("Could not connect to PostgreSQL");
+    let pool = db::pool_from_env().expect("Could not connect to PostgreSQL");
     let mut conn = pool.get().expect("Could not get a PostgreSQL connection");
     let mut harness = HarnessWithOutput::write_to_stdout(&mut conn);
     harness
