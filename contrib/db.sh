@@ -8,18 +8,33 @@ if [ "$1" = "--help" ] || ([ "$1" != "--test" ] && [ -n "$1" ]); then
   [ "$1" = "--help" ] && exit 0 || exit 1
 fi
 
+CMD=$(command -v docker || command -v podman || echo "")
+if [ -z "$CMD" ]; then
+  echo "Error: Neither docker nor podman found in PATH" >&2
+  exit 1
+fi
+
+CONTAINER=bot-na-lista-db
+USERNAME=bot
+PASSWORD=lista
+DATABASE=bot_na_lista
+PORT=5432
+
 VOLUME="-v ./pgdata:/var/lib/postgresql/data"
 if [ "$1" = "--test" ]; then
   VOLUME=""
 fi
 
-docker run \
-  --name bot-na-lista-db \
+$CMD run \
+  --name ${CONTAINER} \
   --rm \
   -d \
-  -e POSTGRES_USER=bot \
-  -e POSTGRES_PASSWORD=lista \
-  -e POSTGRES_DB=bot_na_lista \
+  -e POSTGRES_USER=${USERNAME} \
+  -e POSTGRES_PASSWORD=${PASSWORD} \
+  -e POSTGRES_DB=${DATABASE} \
   ${VOLUME} \
-  -p 5432:5432 \
+  -p ${PORT}:5432 \
   postgres:16.1-bookworm
+
+echo "Postgres running at postgres://${USERNAME}:${PASSWORD}@0.0.0.0:${PORT}/${DATABASE}?sslmode=disable"
+echo "To stop it, use: ${CMD} stop ${CONTAINER}"
