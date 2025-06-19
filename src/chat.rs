@@ -81,7 +81,7 @@ impl Chat {
             return Ok(list);
         }
 
-        log::info!("Creting new List#{}", self.chat_id);
+        log::info!("Creating new List#{}", self.chat_id);
         self.create_list()
             .context(format!("[List#{}] Error creating new list", self.chat_id))
     }
