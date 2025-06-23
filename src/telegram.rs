@@ -50,9 +50,20 @@ async fn send_response(bot: &Bot, chat_id: ChatId, response: Response) {
     };
 }
 
+fn clean_up_message(txt: &str) -> &str {
+    if !txt.starts_with("/") || txt.contains(" ") {
+        return txt;
+    }
+    if let Some(pos) = txt.find("@") {
+        return &txt[0..pos];
+    }
+    txt
+}
+
 async fn process_message(pool: Pool<ConnectionManager<PgConnection>>, bot: &Bot, msg: &Message) {
     if let MessageKind::Common(_) = &msg.kind {
-        if let Some(txt) = msg.text() {
+        if let Some(text) = msg.text() {
+            let txt = clean_up_message(text);
             if txt == "/help" || txt == "/start" {
                 return send_response(bot, msg.chat.id, Response::Text(HELP.to_string())).await;
             }
@@ -122,4 +133,29 @@ pub async fn run(pool: Pool<ConnectionManager<PgConnection>>) -> Result<()> {
         }
     }
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_clean_up_message_without_command() {
+        assert_eq!(clean_up_message("forty two"), "forty two");
+    }
+
+    #[test]
+    fn test_clean_up_message_with_command() {
+        assert_eq!(clean_up_message("/help"), "/help");
+    }
+
+    #[test]
+    fn test_clean_up_message_with_command_and_username() {
+        assert_eq!(clean_up_message("/help@username"), "/help");
+    }
+
+    #[test]
+    fn test_clean_up_message_with_command_and_space() {
+        assert_eq!(clean_up_message("/help me"), "/help me");
+    }
 }
