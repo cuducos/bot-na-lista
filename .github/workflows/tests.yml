@@ -13,7 +13,6 @@ jobs:
       matrix:
         os: ["ubuntu-latest", "macos-latest"]
     runs-on: ${{ matrix.os }}
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
     steps:
     - uses: actions/checkout@v4
     - run:  cargo fmt --check
