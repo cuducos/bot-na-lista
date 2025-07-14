@@ -6,6 +6,7 @@ on:
     branches: [ "main" ]
 env:
   CARGO_TERM_COLOR: always
+  DATABASE_URL: postgres://postgres:postgres@localhost:5432/test_db
 jobs:
   tests:
     strategy:
@@ -13,8 +14,19 @@ jobs:
       matrix:
         os: ["ubuntu-latest", "macos-latest"]
     runs-on: ${{ matrix.os }}
+    services:
+      postgres:
+        image: postgres:latest
+        env:
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: test_db
+        ports:
+          - 5432:5432
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
     - uses: actions/checkout@v4
+    - run: sudo apt-get install -y libpq-dev
+      if: matrix.os == 'ubuntu-latest'
     - run:  cargo fmt --check
     - run: cargo clippy --verbose -- -D warnings
     - run: cargo test --verbose
