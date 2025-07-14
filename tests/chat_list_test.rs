@@ -23,8 +23,7 @@ fn assert_list_table_count(
         .expect("Could not get list count");
     assert_eq!(
         count, expected,
-        "expected list table to have {} rows, got {}",
-        expected, count
+        "expected list table to have {expected} rows, got {count}"
     );
 }
 

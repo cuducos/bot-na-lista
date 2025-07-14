@@ -17,7 +17,7 @@ fn list_with_date_and_item(
     let mut chat = Chat::new(chat_id, &pool).expect("Could not start chat");
     let list = chat
         .list()
-        .unwrap_or_else(|e| panic!("[List#{}] Error creating list: {:?}", chat_id, e));
+        .unwrap_or_else(|e| panic!("[List#{chat_id}] Error creating list: {e:?}"));
     if let Some(it) = item {
         Chat::new(list.chat_id, &pool)
             .expect("Could not start chat")
@@ -54,7 +54,7 @@ fn test_list_with_no_activity_are_deleted_after_one_year() {
         let lists = list::dsl::list
             .load::<List>(&mut conn)
             .expect("Failed to get lists");
-        assert_eq!(lists.len(), 1, "expected 1 list, got\n{:?}", lists);
+        assert_eq!(lists.len(), 1, "expected 1 list, got\n{lists:?}");
         assert_eq!(lists[0].chat_id, new_chat.chat_id);
     });
 }
