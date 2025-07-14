@@ -20,7 +20,7 @@ async fn main() -> Result<()> {
     spawn(async {
         loop {
             if let Err(e) = maintenance::clean_up() {
-                log::error!("Error cleaning up: {:?}", e);
+                log::error!("Error cleaning up: {e:?}");
             }
             sleep(ONE_DAY).await;
         }

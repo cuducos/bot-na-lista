@@ -37,10 +37,10 @@ async fn send_response(bot: &Bot, chat_id: ChatId, response: Response) {
     let bot = bot.clone();
     let (text, label) = match response {
         Response::Text(txt) => (txt, "Message"),
-        Response::List(list) => (format!("{}", list), "List"),
+        Response::List(list) => (format!("{list}"), "List"),
     };
     match bot.send_message(chat_id, text).send().await {
-        Ok(_) => log::debug!("[List#{}] {} sent successfully", chat_id, label),
+        Ok(_) => log::debug!("[List#{chat_id}] {label} sent successfully"),
         Err(e) => log::error!(
             "[List#{}] Error sending {}: {:?}",
             chat_id,

@@ -60,7 +60,7 @@ mod tests {
         };
 
         let expected_output = "1. Foo\n2. Bar\n";
-        assert_eq!(format!("{}", list), expected_output);
+        assert_eq!(format!("{list}"), expected_output);
     }
 
     #[test]
@@ -74,6 +74,6 @@ mod tests {
         };
 
         let expected_output = "The list is empty ¯\\_(ツ)_/¯";
-        assert_eq!(format!("{}", list), expected_output);
+        assert_eq!(format!("{list}"), expected_output);
     }
 }

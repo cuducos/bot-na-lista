@@ -17,8 +17,7 @@ pub struct Chat {
 impl Chat {
     pub fn new(chat_id: i64, pool: &Pool<ConnectionManager<PgConnection>>) -> Result<Self> {
         let conn = pool.get().context(format!(
-            "[List#{}] Could not get database connection",
-            chat_id
+            "[List#{chat_id}] Could not get database connection"
         ))?;
         Ok(Self { chat_id, conn })
     }
