@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-anyhow = "1.0.99"
+anyhow = "1.0.100"
 chrono = "0.4.42"
 diesel = { version = "2.3.2", features = ["chrono", "postgres", "r2d2"] }
 diesel_migrations = { version = "2.3.0", features = ["postgres"] }
