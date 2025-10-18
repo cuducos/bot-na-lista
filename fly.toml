@@ -1,5 +1,5 @@
 app = 'bot-na-lista'
-primary_region = 'ams'
+primary_region = 'gru'
 
 [build]
 
