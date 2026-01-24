@@ -21,8 +21,9 @@ pub fn pool_from_env() -> Result<Pool<ConnectionManager<PgConnection>>> {
     let manager = ConnectionManager::<PgConnection>::new(url);
     Pool::builder()
         .max_size(max_connections())
-        .max_lifetime(Some(Duration::from_secs(300)))
-        .idle_timeout(Some(Duration::from_secs(60)))
+        .max_lifetime(Some(Duration::from_secs(600)))
+        .idle_timeout(Some(Duration::from_secs(120)))
+        .min_idle(Some(0))
         .build(manager)
         .context("Error creating connection pool")
 }

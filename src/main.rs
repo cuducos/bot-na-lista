@@ -12,11 +12,13 @@ async fn main() -> Result<()> {
     pretty_env_logger::init();
     log::info!("Starting Bot na Lista");
     let pool = db::pool_from_env().context("Could not get a database connection pool")?;
-    let mut conn = pool.get().context("Could not get a database connection")?;
-    let mut harness = HarnessWithOutput::write_to_stdout(&mut conn);
-    harness
-        .run_pending_migrations(MIGRATIONS)
-        .map_err(|e| anyhow::anyhow!("Failed to run pending migrations: {}", e))?;
+    {
+        let mut conn = pool.get().context("Could not get a database connection")?;
+        let mut harness = HarnessWithOutput::write_to_stdout(&mut conn);
+        harness
+            .run_pending_migrations(MIGRATIONS)
+            .map_err(|e| anyhow::anyhow!("Failed to run pending migrations: {}", e))?;
+    } // conn dropped here to release database connection
     spawn(async {
         loop {
             if let Err(e) = maintenance::clean_up() {
